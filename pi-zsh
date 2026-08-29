@@ -1,0 +1,20 @@
+#!/bin/sh
+# pi shell wrapper.
+#
+# pi launches this as:  <wrapper> -c '<command>'
+# (see the built-in shell resolver, which passes args ["-c", command] for a
+#  custom shellPath). This wrapper re-execs zsh with -f so it does NOT read
+#  ~/.zshrc, avoiding interactive prompt/compinit integration warnings
+#  (e.g. Powerlevel10k instant prompt, zsh compinit "insecure directories").
+#
+# Keep the zsh path in sync with shellPath in ~/.pi/agent/settings.json.
+
+# Drop the "-c" flag pi passes, then hand the real command to zsh -f.
+# Positional args after the wrapper are: 1=-c, 2=<command>
+if [ "$1" = "-c" ]; then
+  exec /usr/sbin/zsh -f -c "$2"
+fi
+
+# Fallback: treat everything after the wrapper as the zsh argument list and
+# insert -f at the front.
+exec /usr/sbin/zsh -f "$@"
