@@ -1,0 +1,57 @@
+{
+  "defaultProvider": "local",
+  "defaultModel": "peculiar-ragdoll/Tiel-Coder-35B-A3B",
+  "defaultThinkingLevel": "low",
+  "thinkingBudgets": {
+    "minimal": 2048,
+    "low": 4096,
+    "medium": 8192,
+    "high": 16384
+  },
+  "hideThinkingBlock": false,
+  "theme": "noctalia",
+  "quietStartup": true,
+  "collapseChangelog": true,
+  "enableInstallTelemetry": false,
+  "enableAnalytics": false,
+  "enableSkillCommands": true,
+  "defaultTools": [
+    "read",
+    "write",
+    "edit",
+    "bash",
+    "grep",
+    "find",
+    "ls"
+  ],
+  "editorPaddingX": 1,
+  "showHardwareCursor": true,
+  "externalEditor": "zeditor",
+  "defaultProjectTrust": "ask",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 20000
+  },
+  "markdown": {
+    "mermaid": "final"
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  },
+  "warnings": {
+    "anthropicExtraUsage": true
+  },
+  "packages": [
+    "npm:@gotgenes/pi-permission-system"
+  ],
+  "shellPath": "/home/chillie/.pi/agent/pi-zsh",
+  "npmCommand": [
+    "bun"
+  ],
+  "lastChangelogVersion": "0.84.4"
+}
