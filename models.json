@@ -1,0 +1,67 @@
+{
+  "providers": {
+    "local": {
+      "api": "openai-completions",
+      "apiKey": "not-needed",
+      "baseUrl": "http://127.0.0.1:2121/v1",
+      "models": [
+        {
+          "id": "Qwen/Qwen3.5-9B",
+          "name": "Qwen 3.5 9B",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text", "image"]
+        },
+        {
+          "id": "Qwen/Qwen3.8-27B",
+          "name": "Qwen 3.8 27B",
+          "contextWindow": 65536,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text"]
+        },
+        {
+          "id": "Ornith-Ai/Ornith-1.5-9B",
+          "name": "Ornith 1.5 9B",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text"]
+        },
+       {
+          "id": "peculiar-ragdoll/Tiel-Coder-35B-A3B",
+          "name": "Tiel Coder 35B-A3B",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text"]
+        },
+        {
+          "id": "Unsloth/Gemma4-12B",
+          "name": "Gemma 4 12B",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text", "image"]
+        },
+        {
+          "id": "Google/Gemma4-26B-A4B",
+          "name": "Gemma 4 26B A4B",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text"]
+        },
+        {
+          "id": "InclusionAI/Ling-3.0-tiny",
+          "name": "Ling-3.0-tiny",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true,
+          "input": ["text"]
+        }
+      ]
+    }
+  }
+}
