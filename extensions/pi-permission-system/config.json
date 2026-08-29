@@ -1,0 +1,70 @@
+{
+  "$schema": "https://raw.githubusercontent.com/gotgenes/pi-packages/main/packages/pi-permission-system/schemas/permissions.schema.json",
+
+  "debugLog": false,
+  "permissionReviewLog": true,
+  "yoloMode": false,
+  "doublePressToConfirm": true,
+  "forwardingTimeoutMs": 600000,
+  "piInfrastructureReadPaths": [],
+
+  "permission": {
+    "*": "allow",
+    "path": {
+      "*": "allow",
+      "*.env": "ask",
+      "*.env.*": "ask",
+      "*.env.example": "allow",
+      "~/.ssh/*": "deny",
+      "**/.git/**": "deny"
+    },
+    "read": "allow",
+    "write": "ask",
+    "edit": "ask",
+    "find": "allow",
+    "grep": "allow",
+    "ls": "allow",
+    "bash": {
+      "*": "ask",
+      "ls": "allow",
+      "ls *": "allow",
+      "cat": "allow",
+      "cat *": "allow",
+      "grep": "allow",
+      "grep *": "allow",
+      "find": "allow",
+      "find *": "allow",
+      "head": "allow",
+      "head *": "allow",
+      "tail": "allow",
+      "tail *": "allow",
+      "wc": "allow",
+      "wc *": "allow",
+      "cd": "allow",
+      "cd *": "allow",
+      "git *": "ask",
+      "git status": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "pnpm *": "ask",
+      "npm *": "ask",
+      "bun *": "ask",
+      "sudo *": "deny",
+      "rm -rf /": "deny",
+      "rm -rf /*": "deny",
+      "rm -rf ~": "deny",
+      "rm -rf ~/*": "deny",
+      "rm -rf --no-preserve-root": "deny",
+      ":(){:|:&};:": "deny"
+    },
+    "external_directory": "ask",
+    "external_directory_read": "allow",
+    "mcp": {
+      "*": "ask"
+    },
+    "skill": {
+      "*": "ask"
+    }
+  }
+}
