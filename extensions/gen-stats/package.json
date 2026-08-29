@@ -1,0 +1,12 @@
+{
+  "name": "pi-gen-stats",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "gpt-tokenizer": "^2.9.0"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}
