@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Authentication / session data
+auth.json
+trust.json
+
+# Sessions
+sessions/
+
+# Pi permission system review log
+extensions/pi-permission-system/logs/
+
+# Environment variables / secrets
+.env
+.env.*
+.env.*.example
+!.env.example
