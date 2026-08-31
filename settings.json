@@ -46,9 +46,7 @@
   "warnings": {
     "anthropicExtraUsage": true
   },
-  "packages": [
-    "npm:@gotgenes/pi-permission-system"
-  ],
+  "packages": [],
   "shellPath": "/home/chillie/.pi/agent/pi-zsh",
   "npmCommand": [
     "bun"
