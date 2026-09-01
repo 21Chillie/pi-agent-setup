@@ -20,7 +20,7 @@ function isOpToken(t: Token): t is OpToken {
 }
 
 function tokensToStrings(tokens: Token[]): string[] {
-	return tokens.filter((t) => typeof t === "string") as string[];
+	return tokens.filter((t) => typeof t === "string");
 }
 
 function splitOnOps(tokens: Token[], splitOps: string[]): Token[][] {
@@ -39,7 +39,7 @@ function splitOnOps(tokens: Token[], splitOps: string[]): Token[][] {
 }
 
 function hasFlag(args: string[], flag: string): boolean {
-	return args.includes(flag) || args.some((a) => a.startsWith(flag) && flag.length === 2 && a.startsWith("-"));
+	return args.includes(flag) || args.some((a) => a.startsWith(flag) && flag.length === 2);
 }
 
 function anyArgStartsWith(args: string[], prefix: string): boolean {
@@ -54,7 +54,7 @@ function analyzeSegment(seg: Token[]): Risk | null {
 	const args = tokensToStrings(seg);
 	if (args.length === 0) return null;
 
-	const cmd = args[0];
+	const cmd = args[0] ?? "";
 	const rest = args.slice(1);
 
 	// Shell redirection / pipes are handled on the whole command, but keep some segment checks too.
@@ -122,9 +122,23 @@ function analyzeSegment(seg: Token[]): Risk | null {
 		}
 	}
 
+	// write (user-to-user terminal messaging)
+	if (cmd === "write") {
+		reasons.push("write (user-to-user terminal messaging)");
+	}
+
+	// edit (file editor launch; on this system 'edit' runs vim)
+	if (cmd === "edit") {
+		reasons.push("edit (file editor launch)");
+	}
+
+	// File editors (interactive; can modify any file)
+	if (cmd === "vim" || cmd === "vi" || cmd === "nano" || cmd === "emacs") {
+		reasons.push(`${cmd} (interactive file editor)`);
+	}
+
 	// truncate
 	if (cmd === "truncate") {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("truncate (in-place size change, can erase contents)");
 	}
 
@@ -174,7 +188,6 @@ function analyzeSegment(seg: Token[]): Risk | null {
 	}
 	if (cmd === "lsblk") {
 		// Usually read-only, but still disk-related; prompt as requested.
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("lsblk (disk listing)");
 	}
 	if (cmd === "cryptsetup") {
@@ -192,37 +205,30 @@ function analyzeSegment(seg: Token[]): Risk | null {
 
 	// chmod/chown recursive
 	if (cmd === "chmod" && (rest.includes("-R") || rest.includes("--recursive"))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("chmod -R (recursive permission changes)");
 	}
 	if (cmd === "chown" && (rest.includes("-R") || rest.includes("--recursive"))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("chown -R (recursive ownership changes)");
 	}
 
 	// mv/cp overwriting
 	if (cmd === "mv" && (rest.includes("-f") || rest.includes("--force"))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("mv --force/-f (can overwrite files)");
 	}
 	if (cmd === "cp" && (rest.includes("-f") || rest.includes("--force"))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("cp --force/-f (can overwrite files)");
 	}
 
 	// sed/perl in-place
 	if (cmd === "sed" && (hasFlag(rest, "-i") || rest.includes("--in-place"))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("sed -i (in-place file modification)");
 	}
 	if (cmd === "perl" && (rest.includes("-pi") || (rest.includes("-p") && rest.includes("-i")))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("perl -pi/-i (in-place file modification)");
 	}
 
 	// kill/shutdown/systemctl
 	if (cmd === "kill" || cmd === "pkill" || cmd === "killall") {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push(`${cmd} (process termination)`);
 		if (rest.includes("-9")) {
 			severity = "high";
@@ -234,7 +240,6 @@ function analyzeSegment(seg: Token[]): Risk | null {
 		reasons.push(`${cmd} (system power operation)`);
 	}
 	if (cmd === "systemctl" && (rest.includes("stop") || rest.includes("disable"))) {
-		severity = severity === "high" ? "high" : "medium";
 		reasons.push("systemctl stop/disable (service disruption)");
 	}
 
@@ -394,7 +399,7 @@ const MAIN_DISABLED_BLOCKED: Array<{ pattern: RegExp; reason: string }> = [
 	// Recursive deletion
 	{ pattern: /(?<!\bgit\s+)\brm\b[^#\n]*\s-(?:[a-zA-Z]*[rR]|-\brecursive\b)/, reason: "recursive delete (rm -r / -rf / -Rf)" },
 	// Fork bomb: recursively spawns itself, exhausting processes
-	{ pattern: /\(\)\{[^}]*\|[^}]*&[^}]*\}/, reason: "fork bomb (recursive process exhaustion)" },
+	{ pattern: /\(\)\{[^}]*\|[^}]*&[^}]*\}/, reason: "fork bomb (recursive process exhaustion)"},
 	// Privilege escalation
 	{ pattern: /\bsudo\b/, reason: "elevated privileges (sudo)" },
 	// Remote code execution via pipe-to-shell
@@ -538,11 +543,13 @@ export default function (pi: ExtensionAPI) {
 			"Blocked by user via bash-guard (potentially destructive command). " +
 			"Ask the user for a safer alternative or propose a non-destructive command.";
 		if (typeof choice.reason === "string" && choice.reason.trim()) {
-			reason += ` User-provided reason: "${choice.reason.trim()}. `;
+			reason += ` User-provided reason: "${choice.reason.trim()}". `;
 		}
 		return {
 			block: true,
-			reason: reason + "",
+			reason: reason,
 		};
 	});
 }
+
+export { analyzeBashCommand };
