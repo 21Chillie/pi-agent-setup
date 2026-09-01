@@ -514,9 +514,8 @@ export default function (pi: ExtensionAPI) {
 
 		const now = Date.now();
 		// Prune stale entries so the map doesn't grow without bound over a session.
-		for (const cmd of recentlyAborted.keys()) {
-			const last = recentlyAborted.get(cmd);
-			if (last !== undefined && now - last >= ABORT_REMEMBER_MS) recentlyAborted.delete(cmd);
+		for (const [cmd, last] of recentlyAborted.entries()) {
+			if (now - last >= ABORT_REMEMBER_MS) recentlyAborted.delete(cmd);
 		}
 		const lastAbort = recentlyAborted.get(command);
 		if (lastAbort && now - lastAbort < ABORT_REMEMBER_MS) {
