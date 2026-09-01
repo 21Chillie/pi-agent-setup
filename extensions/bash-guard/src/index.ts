@@ -19,6 +19,10 @@ function isOpToken(t: Token): t is OpToken {
 	return typeof t === "object" && t !== null && "op" in t;
 }
 
+// Matches a fork bomb: a function that recursively spawns itself, exhausting processes.
+// Shared between the live analyzer and the disabled-mode hard-block floor.
+const FORK_BOMB_PATTERN = /\(\)\{[^}]*\|[^}]*&[^}]*\}/;
+
 function tokensToStrings(tokens: Token[]): string[] {
 	return tokens.filter((t) => typeof t === "string");
 }
@@ -58,7 +62,10 @@ function analyzeSegment(seg: Token[]): Risk | null {
 	const rest = args.slice(1);
 
 	// Shell redirection / pipes are handled on the whole command, but keep some segment checks too.
-	if (ops.includes("|") && (args.includes("sh") || args.includes("bash") || args.includes("zsh") || args.includes("fish"))) {
+	// Piping into a shell is the classic remote-code-execution pattern; captured once here and
+	// reused by the curl/wget check below so a single `curl ... | sh` doesn't emit overlapping reasons.
+	const pipedToShell = ops.includes("|") && (args.includes("sh") || args.includes("bash") || args.includes("zsh") || args.includes("fish"));
+	if (pipedToShell) {
 		reasons.push("pipe to a shell (possible remote code execution)");
 		severity = "high";
 	}
@@ -105,7 +112,6 @@ function analyzeSegment(seg: Token[]): Risk | null {
 			reasons.push("git reset --hard (discard changes)");
 		}
 		if ((sub === "checkout" || sub === "restore") && (subArgs.includes(".") || subArgs.includes("--") || subArgs.includes("--source"))) {
-			severity = severity === "high" ? "high" : "medium";
 			reasons.push("git checkout/restore (can overwrite working tree)");
 		}
 		if (sub === "push" && (subArgs.includes("--force") || subArgs.includes("--force-with-lease") || subArgs.includes("-f"))) {
@@ -122,28 +128,13 @@ function analyzeSegment(seg: Token[]): Risk | null {
 		}
 	}
 
-	// write (user-to-user terminal messaging)
-	if (cmd === "write") {
-		reasons.push("write (user-to-user terminal messaging)");
-	}
-
-	// edit (file editor launch; on this system 'edit' runs vim)
-	if (cmd === "edit") {
-		reasons.push("edit (file editor launch)");
-	}
-
-	// File editors (interactive; can modify any file)
-	if (cmd === "vim" || cmd === "vi" || cmd === "nano" || cmd === "emacs") {
-		reasons.push(`${cmd} (interactive file editor)`);
-	}
-
 	// truncate
 	if (cmd === "truncate") {
 		reasons.push("truncate (in-place size change, can erase contents)");
 	}
 
 	// dd of=
-	if (cmd === "dd" && (anyArgStartsWith(rest, "of=") || rest.includes("of"))) {
+	if (cmd === "dd" && anyArgStartsWith(rest, "of=")) {
 		severity = "high";
 		reasons.push("dd with output file/device (can overwrite data)");
 	}
@@ -243,8 +234,9 @@ function analyzeSegment(seg: Token[]): Risk | null {
 		reasons.push("systemctl stop/disable (service disruption)");
 	}
 
-	// Remote execution patterns
-	if ((cmd === "curl" || cmd === "wget") && ops.includes("|")) {
+	// Remote execution patterns. Skipped when the pipe already went to a shell (handled above),
+	// so `curl ... | sh` reports a single, more specific reason instead of two.
+	if ((cmd === "curl" || cmd === "wget") && ops.includes("|") && !pipedToShell) {
 		severity = "high";
 		reasons.push("curl/wget piped (possible remote code execution)");
 	}
@@ -307,7 +299,7 @@ function analyzeBashCommand(command: string): Risk | null {
 	}
 
 	// Fork bomb: define a function that recursively spawns itself, exhausting processes
-	if (/\(\)\{[^}]*\|[^}]*&[^}]*\}/.test(command) || command.includes(":(){")) {
+	if (FORK_BOMB_PATTERN.test(command) || command.includes(":(){")) {
 		reasons.push("fork bomb (recursive process exhaustion)");
 		severity = "high";
 	}
@@ -399,7 +391,7 @@ const MAIN_DISABLED_BLOCKED: Array<{ pattern: RegExp; reason: string }> = [
 	// Recursive deletion
 	{ pattern: /(?<!\bgit\s+)\brm\b[^#\n]*\s-(?:[a-zA-Z]*[rR]|-\brecursive\b)/, reason: "recursive delete (rm -r / -rf / -Rf)" },
 	// Fork bomb: recursively spawns itself, exhausting processes
-	{ pattern: /\(\)\{[^}]*\|[^}]*&[^}]*\}/, reason: "fork bomb (recursive process exhaustion)"},
+	{ pattern: FORK_BOMB_PATTERN, reason: "fork bomb (recursive process exhaustion)" },
 	// Privilege escalation
 	{ pattern: /\bsudo\b/, reason: "elevated privileges (sudo)" },
 	// Remote code execution via pipe-to-shell
@@ -521,6 +513,11 @@ export default function (pi: ExtensionAPI) {
 		if (!risk) return;
 
 		const now = Date.now();
+		// Prune stale entries so the map doesn't grow without bound over a session.
+		for (const cmd of recentlyAborted.keys()) {
+			const last = recentlyAborted.get(cmd);
+			if (last !== undefined && now - last >= ABORT_REMEMBER_MS) recentlyAborted.delete(cmd);
+		}
 		const lastAbort = recentlyAborted.get(command);
 		if (lastAbort && now - lastAbort < ABORT_REMEMBER_MS) {
 			return {
