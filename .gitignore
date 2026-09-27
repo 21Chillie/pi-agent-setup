@@ -16,3 +16,6 @@ extensions/pi-permission-system/logs/
 .env.*
 .env.*.example
 !.env.example
+
+# Skills
+skills/
