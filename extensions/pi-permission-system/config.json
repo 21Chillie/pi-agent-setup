@@ -1,0 +1,68 @@
+{
+  "permission": {
+    "*": "allow",
+    "path": {
+      "*": "allow",
+      "*.env": "ask",
+      "*.env.*": "ask",
+      "*.env.example": "allow"
+    },
+    "read": {
+      "*": "allow",
+      "*.env": "ask",
+      "*.env.*": "ask",
+      "*.env.example": "allow"
+    },
+    "write": "ask",
+    "edit": "ask",
+    "bash": {
+      "*": "ask",
+      
+      // ---- Deny: destructive / dangerous ----
+      "sudo *": "ask",
+      "rm -rf *": "deny",
+      "mkfs *": "deny",
+      "mkfs.*": "deny",
+      "dd of=/dev/*": "deny",
+      "dd if=/dev/zero of=/dev/*": "deny",
+      "shred *": "deny",
+      "chmod -R 777 *": "deny",
+      
+      // ---- Allow: file inspection / reading ----
+      "ls *": "allow",
+      "cat *": "allow",
+      "grep *": "allow",
+      "find *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "pwd": "allow",
+      "diff *": "allow",
+      "wc *": "allow",
+      "file *": "allow",
+      
+      // ---- Allow: git (inspect only) ----
+      "git status *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git branch *": "allow",
+      "git show *": "allow",
+      "git blame *": "allow",
+      "git tag *": "allow",
+      "git rev-list *": "allow",
+      "git ls-files *": "allow",
+      
+      // ---- Allow: navigation / system info ----
+      "cd *": "allow",
+      "uname *": "allow",
+      "df *": "allow",
+      "du *": "allow",
+      "stat *": "allow",
+      "readlink *": "allow",
+      "which *": "allow",
+      "sort *": "allow",
+      "uniq *": "allow",
+      "comm *": "allow"
+    },
+    "external_directory": "ask"
+  }
+}
