@@ -1,2 +1,4 @@
 *
 !.gitignore
+!bun.lock
+!package.json
