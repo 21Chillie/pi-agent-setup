@@ -1,7 +1,7 @@
 {
   "defaultProvider": "local",
   "defaultModel": "peculiar-ragdoll/Tiel-Coder-35B-A3B",
-  "defaultThinkingLevel": "low",
+  "defaultThinkingLevel": "medium",
   "thinkingBudgets": {
     "minimal": 2048,
     "low": 4096,
@@ -46,10 +46,14 @@
   "warnings": {
     "anthropicExtraUsage": true
   },
-  "packages": [],
+  "packages": [
+    "npm:@gotgenes/pi-permission-system"
+  ],
   "shellPath": "/home/chillie/.pi/agent/pi-zsh",
   "npmCommand": [
     "bun"
   ],
-  "lastChangelogVersion": "0.84.4"
+  "lastChangelogVersion": "0.87.1",
+  "showCacheMissNotices": true,
+  "tuiMode": "regular"
 }
