@@ -2,6 +2,6 @@
   "name": "pi-extensions",
   "private": true,
   "dependencies": {
-    "@gotgenes/pi-permission-system": "^35.0.0"
+    "@gotgenes/pi-permission-system": "^40.1.4"
   }
 }
