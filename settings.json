@@ -53,7 +53,7 @@
   "npmCommand": [
     "bun"
   ],
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "1.1.0",
   "showCacheMissNotices": true,
   "tuiMode": "regular"
 }
