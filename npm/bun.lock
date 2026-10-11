@@ -5,7 +5,7 @@
     "": {
       "name": "pi-extensions",
       "dependencies": {
-        "@gotgenes/pi-permission-system": "^35.0.0",
+        "@gotgenes/pi-permission-system": "^40.1.4",
       },
     },
   },
@@ -118,7 +118,7 @@
 
     "@google/genai": ["@google/genai@2.21.0", "", { "dependencies": { "google-auth-library": "^10.3.0", "p-retry": "^4.6.2", "protobufjs": "^7.5.4", "ws": "^8.18.0" }, "peerDependencies": { "@modelcontextprotocol/sdk": "^1.25.2" }, "optionalPeers": ["@modelcontextprotocol/sdk"] }, "sha512-+PDtco2/Z0ONdzCGekCoCT+O1VJS9xJQNN4XzQpXG/t3El/SWWMkCWlFRO1KmivOHPa4Q0VjUYu1HBKCZ/v33Q=="],
 
-    "@gotgenes/pi-permission-system": ["@gotgenes/pi-permission-system@35.0.0", "", { "dependencies": { "tree-sitter-bash": "^0.25.1", "web-tree-sitter": "^0.26.9", "zod": "^4.4.3" }, "peerDependencies": { "@earendil-works/pi-coding-agent": ">=0.79.0", "@earendil-works/pi-tui": ">=0.79.0" } }, "sha512-m5hdqpBOXnPFB71Dk4ZBjaka3O04kyhLjvspnzxpGneqjnSLG0po+z0Foe5hQu3H0jiLxD32I3MuR3Mp9ODiPg=="],
+    "@gotgenes/pi-permission-system": ["@gotgenes/pi-permission-system@40.1.4", "", { "dependencies": { "tree-sitter-bash": "^0.25.1", "web-tree-sitter": "^0.26.9", "zod": "^4.4.3" }, "peerDependencies": { "@earendil-works/pi-coding-agent": ">=1.0.0", "@earendil-works/pi-tui": ">=1.0.0" } }, "sha512-whC71IpfdhdEbILZ/gpkDm1j2mEhp1wRGwfdb8t62zAz0+k5k75mrCDpBe9GbghPCVuGWdfP40ktUfH33iW+Xw=="],
 
     "@protobufjs/aspromise": ["@protobufjs/aspromise@1.1.2", "", {}, "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ=="],
 
