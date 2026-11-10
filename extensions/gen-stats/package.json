@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "gpt-tokenizer": "^2.9.0"
+    "gpt-tokenizer": "4.1.1"
   },
   "pi": {
     "extensions": ["./index.ts"]
